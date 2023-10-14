@@ -1,11 +1,52 @@
+"""
+Programa de Web Scraping para Extrair Dados de Cartórios
+===========================================
+
+Este programa utiliza a biblioteca Selenium para automatizar a navegação em um site e extrair informações sobre cartórios. Ele foi projetado para funcionar com o site https://www.cnj.jus.br/corregedoria/justica_aberta/? e exportar os dados para um arquivo Excel.
+
+Requisitos
+----------
+- Python 3.x
+- Biblioteca Selenium (instalável com 'pip install selenium')
+- Google Chrome instalado no sistema
+- ChromeDriver instalado e configurado no sistema (https://sites.google.com/chromium.org/driver/)
+
+Instruções
+----------
+1. Certifique-se de que o Python e as bibliotecas necessárias estejam instalados.
+2. Certifique-se de que o ChromeDriver esteja configurado corretamente e disponível no PATH do sistema.
+3. Execute o programa, fornecendo a lista de CNS (Código Nacional de Serventia) e o nome da planilha.
+
+Exemplo de Uso
+--------------
+lista_cns = ['CNS1', 'CNS2', 'CNS3']
+nome_planilha = 'dados_cartorios'
+cartorios(lista_cns, nome_planilha)
+
+Funções
+-------
+- iniciar_driver(): Inicializa o driver do Selenium e retorna uma instância do driver e um objeto de espera.
+- planilha(): Cria uma nova planilha Excel para armazenar os dados.
+- cartorios(lista_cns, nome_planilha): Inicia a extração de dados dos cartórios e salva as informações na planilha especificada.
+
+Este programa é específico para o site https://www.cnj.jus.br/corregedoria/justica_aberta/ e pode precisar de ajustes se o site for modificado.
+
+Autor
+-----
+Nome: Lucas Brasil Silva
+Email: lucasbrasil396@gmail.com
+----
+Última atualização: 14/10/2023
+
+"""
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options  import Options
 from selenium.webdriver.support.ui    import WebDriverWait
 from selenium.common.exceptions   import *
 from selenium.webdriver.support  import expected_conditions as CondicaoEsperada
 from selenium.webdriver.common.by  import By
-from bs4 import BeautifulSoup
-from time   import sleep
+from time import sleep
 import openpyxl
 from cns_filter import cnsFilter
 
@@ -46,13 +87,16 @@ def planilha():
     sheet = workbook['Cartorios']
     return workbook, sheet
 
-def main(lista_cns,nome_planilha):
+def cartorios(lista_cns,nome_planilha):
     driver, wait = iniciar_driver()
+    print('Abrindo o site desejado!!\n')
     driver.get('https://www.cnj.jus.br/corregedoria/justica_aberta/?')
     sleep(3)
 
     workbook, sheet = planilha()
     sheet.append(['NOME','RESPONSAVEL','ATRIBUICAO','TELEFONE','EMAIL','MUNICIPIO','UF'])
+    print('Iniciando a extração dos respectivos dados do cartório!!\n')
+    print(f'Total de páginas a serem varridas {len(lista_cns)}\n')
     for cns in lista_cns:
         wait.until(CondicaoEsperada.element_to_be_clickable((By.XPATH, '//div[@class="menu_int"]//ul/li/a[@class="dropdown-toggle"]'))).click()
 
@@ -80,10 +124,5 @@ def main(lista_cns,nome_planilha):
         sheet.append([nome,responsavel,atribuicoes,telefone,email,cidade,uf])
 
     workbook.save(f'{nome_planilha}.xlsx')
-    print('Processo Finalizado')
-
+    print('Processo de extração dos dados finalizado com sucesso!!')
     driver.close()
-
-if __name__ == '__main__':
-    lista_cns = cnsFilter.municipio(['FLORIANOPOLIS'])
-    main(lista_cns,'planilha-municipio')
