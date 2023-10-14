@@ -1,0 +1,2 @@
+Devido ao fato de existirem por volta de 13277 cartórios registrados no Conselho Nacional De Justiça(CNJ), o tempo estimado da obtenção destes dados é em média 03:30h.
+Tendo em vista a varredura de 13227 páginas para que seja gerado um arquivo excel com todos os cartórios do território brasileiro que estão ativos.
